@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-white text-ink font-sans antialiased;
+}
+
+/* Brand button utility, reused across the app */
+@layer components {
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+           font-semibold text-white transition;
+    background: linear-gradient(135deg, #ff6a00, #ff9a40);
+    box-shadow: 0 6px 20px rgba(255, 106, 0, 0.35);
+  }
+  .btn-brand:hover {
+    @apply -translate-y-0.5;
+  }
+}
