@@ -41,6 +41,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <nav className="flex flex-col gap-1 text-sm">
           <Link href="/admin" className="rounded-lg px-3 py-2 hover:bg-white/5">📋 Orders</Link>
           <Link href="/admin/menu" className="rounded-lg px-3 py-2 hover:bg-white/5">🍽️ Menu</Link>
+          <Link href="/admin/categories" className="rounded-lg px-3 py-2 hover:bg-white/5">🗂️ Categories</Link>
+          <Link href="/admin/account" className="rounded-lg px-3 py-2 hover:bg-white/5">🔒 Change Password</Link>
         </nav>
         <div className="mt-auto">
           <p className="px-3 text-xs text-cream/40">Logged in as</p>

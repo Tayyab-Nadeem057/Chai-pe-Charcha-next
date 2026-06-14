@@ -55,11 +55,29 @@ export async function saveItem(formData: FormData): Promise<Result> {
     image_url = admin.storage.from("menu-images").getPublicUrl(path).data.publicUrl;
   }
 
+  // Variants (sizes) — sent as a JSON string from the form.
+  let variants: { label: string; price_offset: number }[] | null = null;
+  const variantsRaw = formData.get("variants") as string | null;
+  if (variantsRaw) {
+    try {
+      const arr = JSON.parse(variantsRaw);
+      if (Array.isArray(arr)) {
+        const cleaned = arr
+          .map((v) => ({ label: String(v.label ?? "").trim(), price_offset: Number(v.price_offset) || 0 }))
+          .filter((v) => v.label);
+        variants = cleaned.length ? cleaned : null;
+      }
+    } catch {
+      return { ok: false, error: "Invalid variants" };
+    }
+  }
+
   const row = {
     name,
     price,
     category_id,
     image_url,
+    variants,
     dine_in: formData.get("dine_in") === "on",
     takeaway: formData.get("takeaway") === "on",
     delivery: formData.get("delivery") === "on",

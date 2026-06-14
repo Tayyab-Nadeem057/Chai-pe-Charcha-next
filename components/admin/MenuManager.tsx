@@ -17,7 +17,7 @@ export function MenuManager({
   const [editing, setEditing] = useState<MenuItem | "new" | null>(null);
   const [pending, start] = useTransition();
 
-  function toggle(item: MenuItem, field: "is_active" | "sold_out") {
+  function toggle(item: MenuItem, field: "is_active" | "sold_out" | "is_featured") {
     start(async () => {
       await toggleItem(item.id, field, !item[field]);
       router.refresh();
@@ -69,6 +69,13 @@ export function MenuManager({
                 >
                   {item.sold_out ? "Sold out" : "In stock"}
                 </button>
+                <button
+                  onClick={() => toggle(item, "is_featured")}
+                  disabled={pending}
+                  className={`rounded-full px-2.5 py-1 ${item.is_featured ? "bg-brand/20 text-brand" : "bg-white/5 text-cream/40"}`}
+                >
+                  {item.is_featured ? "★ Featured" : "☆ Feature"}
+                </button>
               </div>
               <div className="mt-3 flex gap-2">
                 <button onClick={() => setEditing(item)} className="flex-1 rounded-lg bg-brand/15 py-1.5 text-xs font-semibold text-brand">✏️ Edit</button>
@@ -108,11 +115,15 @@ function ItemForm({
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<string | null>(item?.image_url ?? null);
+  const [variants, setVariants] = useState<{ label: string; price_offset: number }[]>(
+    item?.variants ?? [],
+  );
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     const fd = new FormData(e.currentTarget);
+    fd.set("variants", JSON.stringify(variants));
     start(async () => {
       const res = await saveItem(fd);
       if (res.ok) onSaved();
@@ -165,6 +176,47 @@ function ItemForm({
           }}
           className="mb-3 w-full text-sm"
         />
+
+        <div className="mb-3 rounded-lg border border-brand/15 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs uppercase tracking-wider text-cream/40">Sizes / Variants (optional)</span>
+            <button
+              type="button"
+              onClick={() => setVariants([...variants, { label: "", price_offset: 0 }])}
+              className="text-xs font-semibold text-brand"
+            >
+              + Add size
+            </button>
+          </div>
+          {variants.length === 0 && (
+            <p className="text-xs text-cream/40">No sizes — sold at one price.</p>
+          )}
+          {variants.map((v, i) => (
+            <div key={i} className="mb-2 flex gap-2">
+              <input
+                placeholder="Label (e.g. Half)"
+                value={v.label}
+                onChange={(e) =>
+                  setVariants(variants.map((x, n) => (n === i ? { ...x, label: e.target.value } : x)))
+                }
+                className="flex-1 rounded-lg border border-brand/20 bg-coal px-2 py-1.5 text-sm"
+              />
+              <input
+                type="number"
+                placeholder="+Rs"
+                value={v.price_offset}
+                onChange={(e) =>
+                  setVariants(variants.map((x, n) => (n === i ? { ...x, price_offset: Number(e.target.value) } : x)))
+                }
+                className="w-20 rounded-lg border border-brand/20 bg-coal px-2 py-1.5 text-sm"
+              />
+              <button type="button" onClick={() => setVariants(variants.filter((_, n) => n !== i))} className="px-1 text-red-400">✕</button>
+            </div>
+          ))}
+          <p className="mt-1 text-[0.65rem] text-cream/30">
+            "+Rs" is added to the base price. First size is usually 0 (e.g. Half = 0, Full = +400).
+          </p>
+        </div>
 
         <div className="mb-3 space-y-2 rounded-lg border border-brand/15 p-3 text-sm">
           <div className="text-xs uppercase tracking-wider text-cream/40">Available for</div>

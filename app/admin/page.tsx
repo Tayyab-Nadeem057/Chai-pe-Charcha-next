@@ -23,17 +23,25 @@ const pill: Record<string, string> = {
 
 export default async function AdminOrdersPage() {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("orders")
-    .select("*, order_items(item_name, quantity)")
-    .order("created_at", { ascending: false });
+  // Counts are cheap (head-only); the table loads just the 100 most recent.
+  const [list, totalRes, pendingRes, acceptedRes, rejectedRes] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("*, order_items(item_name, quantity)")
+      .order("created_at", { ascending: false })
+      .limit(100),
+    supabase.from("orders").select("id", { count: "exact", head: true }),
+    supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "Pending"),
+    supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "Accepted"),
+    supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "Rejected"),
+  ]);
 
-  const orders = (data ?? []) as OrderRow[];
+  const orders = (list.data ?? []) as OrderRow[];
   const counts = {
-    total: orders.length,
-    pending: orders.filter((o) => o.status === "Pending").length,
-    accepted: orders.filter((o) => o.status === "Accepted").length,
-    rejected: orders.filter((o) => o.status === "Rejected").length,
+    total: totalRes.count ?? 0,
+    pending: pendingRes.count ?? 0,
+    accepted: acceptedRes.count ?? 0,
+    rejected: rejectedRes.count ?? 0,
   };
 
   return (

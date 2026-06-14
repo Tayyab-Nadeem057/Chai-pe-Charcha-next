@@ -1,30 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useFormState, useFormStatus } from "react-dom";
+import { login } from "@/lib/actions/auth";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-brand w-full disabled:opacity-50">
+      {pending ? "Signing in…" : "Sign In"}
+    </button>
+  );
+}
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function signIn(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setBusy(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    router.push("/admin");
-    router.refresh();
-  }
+  const [state, formAction] = useFormState(login, { error: "" });
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-coal px-4">
@@ -33,31 +22,27 @@ export default function LoginPage() {
         <p className="mb-6 text-center text-xs uppercase tracking-widest text-brand/70">
           Chai Pe Charcha
         </p>
-        {error && (
+        {state?.error && (
           <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
-            {error}
+            {state.error}
           </div>
         )}
-        <form onSubmit={signIn} className="space-y-3">
+        <form action={formAction} className="space-y-3">
           <input
+            name="email"
             type="email"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full rounded-lg border border-brand/20 bg-coal px-4 py-3 text-sm outline-none focus:border-brand"
           />
           <input
+            name="password"
             type="password"
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full rounded-lg border border-brand/20 bg-coal px-4 py-3 text-sm outline-none focus:border-brand"
           />
-          <button type="submit" disabled={busy} className="btn-brand w-full disabled:opacity-50">
-            {busy ? "Signing in…" : "Sign In"}
-          </button>
+          <SubmitButton />
         </form>
       </div>
     </main>
