@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/storefront/CartContext";
@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Chai Pe Charcha — Karahi, BBQ, Pizza & Chai in Hyderabad",
   description:
     "Order karahi, BBQ, pizza, paratha, chai and more from Chai Pe Charcha. Delivery, takeaway and dine-in across Hyderabad.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

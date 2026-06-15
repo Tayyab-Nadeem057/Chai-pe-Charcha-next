@@ -6,7 +6,7 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  @apply bg-white text-ink font-sans antialiased;
+  @apply bg-cream text-ink font-sans antialiased;
 }
 
 /* Brand button utility, reused across the app */
@@ -20,4 +20,13 @@ body {
   .btn-brand:hover {
     @apply -translate-y-0.5;
   }
+}
+
+/* Horizontal scrollers (e.g. the menu category bar) with no visible scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

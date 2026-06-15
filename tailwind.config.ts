@@ -8,12 +8,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#FF6A00",
+          DEFAULT: "#E8731C",
           light: "#FF9A40",
-          soft: "#FFF3E8",
+          soft: "#FBEFE0",
         },
-        ink: "#1A0A00",
-        cream: "#FFF3E4",
+        ink: "#2A1A0F",
+        cream: "#FBF4E9",
+        sand: "#F1E4CE",
+        cocoa: "#3D2817",
+        terracotta: "#C4622D",
         coal: "#0C0600",
         surface: "#1B0F05",
       },

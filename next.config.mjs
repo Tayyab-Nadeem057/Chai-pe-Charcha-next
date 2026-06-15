@@ -19,6 +19,7 @@ const nextConfig = {
       "img-src 'self' data: blob: https://*.supabase.co",
       "font-src 'self' data:",
       `connect-src 'self' ${supabase} https://*.supabase.co`,
+      "frame-src 'self' https://www.google.com https://maps.google.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
